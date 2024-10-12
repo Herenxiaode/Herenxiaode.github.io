@@ -1,0 +1,20 @@
+
+坏块信息查看与清理
+
+zpool status 查询坏块
+zpool clear 池ID 硬盘ID 清理坏块信息
+zpool scrub 池ID 自动纠错
+
+
+设定SATA速度
+
+midclt call system.advanced.update '{"kernel_extra_options": "libata.force=3.0Gbps"}'
+1.5Gbps	3.0Gbps	6.0Gbps
+/proc/cmdline
+
+
+清理回收站
+
+find /mnt/**/.recycle -mtime +900 -type f -print0 |xargs -0 rm 
+find /mnt/**/.recycle -size 0 -type f -print0 |xargs -0 rm 
+find /mnt/**/.recycle -depth -type d -empty -print0 |xargs -0 rmdir 

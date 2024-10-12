@@ -1,0 +1,15 @@
+{
+	"name": "herenxiaode.github.io",
+	"version": "0.1",
+	"description": "Web as Herenxiaode.github.io",
+	"author": "L <Herenxiaode@gmail.com>",
+	"main": "bin/server.ts",
+	"scripts": {
+		"test": "node webserver.js",
+		"web": "esbuild src/web/log/App.ts --bundle --minify --outfile=docs/bundle.js"
+	},
+	"type": "commonjs",
+	"devDependencies": {
+		"@types/node": "^22.7.5"
+	}
+}

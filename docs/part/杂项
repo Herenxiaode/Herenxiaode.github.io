@@ -1,0 +1,25 @@
+
+echo "Europe/Rome" >/etc/timezone CEST
+
+cmd /c pm2 restart server
+
+networkingMode=bridged
+vmSwitch=WSL
+ipv6=true
+dhcp=true
+
+
+
+Start-Service -Name WinRM
+
+C:\ProgramData\ssh\sshd_config
+
+PasswordAuthentication yes
+PermitEmptyPasswords yes
+
+xcopy /ysi out\server.js \\Print-R4\C\PrintMaster\
+
+net share C=C: /grant:everyone,full
+icacls "C:\Users\*" /grant everyone:(OI)(CI)F
+
+docker run --detach -v "TrueNAS:/data" -p 88:80 -p 99:443 ixsystems/truecommand
