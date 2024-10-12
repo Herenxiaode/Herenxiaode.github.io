@@ -55,3 +55,8 @@ div a{display: block;}
 .vertical{width:1px;height:100%;left: 80%;}
 .horizontal{width:100%;height:1px;}
 
+img{
+	width:70%;
+	height:auto;
+	margin-top:3%;
+}
