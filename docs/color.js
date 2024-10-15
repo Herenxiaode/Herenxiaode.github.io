@@ -13,7 +13,12 @@ this.onload=()=>{
 	Main.Color=[]
 	var Body=document.body;
 	Body.AddCSS('InkCSS',`
-body{white-space: pre;text-align: center;cursor: default;}
+body{
+	background-color:unset;
+	white-space:pre;
+	text-align:center;
+	cursor:default;
+}
 .LabelH{font-size:.8em;}
 .INK x{display:inline-block;width:1em;}
 .INK .LabelT{width:unset;}
