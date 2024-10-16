@@ -165,6 +165,7 @@ function ThisDrawCurve(Points,Color){
 	const W=this.width
 	const s=W/100
 	const w=W/20
+	CT.beginPath()
 	for(let i=0;i<=W;i+=w){
 		CT.strokeStyle='#000'
 		CT.lineWidth=.5
@@ -175,15 +176,14 @@ function ThisDrawCurve(Points,Color){
 	CT.beginPath()
 	CT.lineWidth=2
 	CT.strokeStyle=Color
-	for(var i in Points){
-		var a=Points[i]
-		var b=Points[++i]
+	for(let i in Points){
+		const a=Points[i]
+		const b=Points[++i]
 		if(!b){CT.quadraticCurveTo(a.X*s,W-a.Y*s,a.X*s,W-a.Y*s);continue;}
-		var c={X:(a.X+b.X)/2,Y:(a.Y+b.Y)/2}
+		const c={X:(a.X+b.X)/2,Y:(a.Y+b.Y)/2}
 		CT.quadraticCurveTo(a.X*s,W-a.Y*s,c.X*s,W-c.Y*s)
 	}
 	CT.moveTo(W,0)
-	CT.closePath()
 	CT.stroke()
 	
 	// for(var a of Points){
@@ -193,6 +193,7 @@ function ThisDrawCurve(Points,Color){
 	// 	CT.closePath()
 	// 	CT.fill()
 	// }
+	// CT.closePath()
 }
 function ShowInfo(Info,X,Y){
 	if(Main.InfoPage==null){
