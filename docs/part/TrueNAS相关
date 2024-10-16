@@ -18,3 +18,5 @@ midclt call system.advanced.update '{"kernel_extra_options": "libata.force=3.0Gb
 find /mnt/**/.recycle -mtime +900 -type f -print0 |xargs -0 rm 
 find /mnt/**/.recycle -size 0 -type f -print0 |xargs -0 rm 
 find /mnt/**/.recycle -depth -type d -empty -print0 |xargs -0 rmdir 
+
+find /mnt/*/*/. -name "Thumbs.db" -type f -print0 |xargs -0 rm

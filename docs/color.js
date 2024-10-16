@@ -31,12 +31,18 @@ body{
 .NumberTable{display:block;}
 .NumberValue{display: inline-grid;}
 .ColorValue{display:inline-grid;}
-.Point{position: relative;padding:.5em 1em;}
+.Point{position: relative;padding:.7em 1em;}
 .Point .Level{
 	position: absolute;
     font-size: .1em;
     left: 0px;
     top: 0px;
+}
+.Point .dE{
+	position: absolute;
+    font-size: .1em;
+    left: 0px;
+    bottom: 0px;
 }
 
 .InfoPage{
@@ -57,18 +63,52 @@ body{
 .M.Select{color:#0F0;}
 .O.Select{color:#00F;}
 
+Menu{
+	position:fixed;
+	top:0;left:0;
+	margin:0;padding:0;
+}
+Menu>*{display:block;}
 input{width:5em;}
-
 canvas{
+	position: absolute;
+	left: 0;
 	width: 500px;
 	height: 500px;
+    background: #FFF;
+    z-index: -1;
+    
 }
 .red{color:#F00 !important;}
 .Hidden{display:none;}
 `)
+	const NumberTable=Main.NumberTable=Body.AddElement({Name:'NumberTable'})
+	const Menu=Body.AddElement({ID:'Menu',Value:[
+		{ID:'Canvas'},
+		{ID:'Input'},
+		// {ID:'Switch',Value:'$State'},
+		{ID:'Show',Value:'显示画布'},
+		{ID:'Hide',Value:'隐藏画布'},
+		{ID:'Clear',Value:'清除画布'}
+	]})
+	const Input=Menu.Input
+	const Canvas=Main.CV=Menu.Canvas.Hide()
+	Canvas.width=Canvas.height='500'
+	Canvas.DrawCurve=ThisDrawCurve
+	if(Canvas.getContext)Canvas.Context=Main.CT=Canvas.getContext('2d')
+	// Menu.SetVariable({State:'显示画布'})
+	// Canvas.Show=()=>{Canvas.SetClass('Hidden',!(Canvas.hidden=1));Menu.SetVariable({State:'隐藏画布'})}
+	// Canvas.Hide=()=>{Canvas.SetClass('Hidden',!(Canvas.hidden=0));Menu.SetVariable({State:'显示画布'})}
+	// Menu.Switch.onclick=()=>{if(Canvas.hidden=!Canvas.hidden)Canvas.Show();else Canvas.Hide()}
+	Canvas.Show=()=>Canvas.SetClass('Hidden',0)
+	Canvas.Hide=()=>Canvas.SetClass('Hidden',1)
+	Menu.Show.onclick=()=>Canvas.Show()
+	Menu.Hide.onclick=()=>Canvas.Hide()
+	Menu.Clear.onclick=()=>{Menu.Canvas.Context.closePath();Menu.Canvas.Context.clearRect(0,0,Menu.Canvas.width,Menu.Canvas.height)}
 
-	var o=document.createElement('input')
-	o.type='file';o.multiple=true;o.onchange=function(){
+	Input.type='file'
+	Input.multiple=true
+	Input.onchange=function(){
 		for(let file of this.files)if(file.name.endsWith('.txt')){
 			let FR=new FileReader()
 			FR.Files=this.files
@@ -78,37 +118,31 @@ canvas{
 			FR.readAsText(file)
 		}
 	}
-	document.body.appendChild(o)
-	Main.CV=document.createElement('canvas')
-	document.body.appendChild(Main.CV)
-
-	if(Main.CV.getContext)Main.CT=Main.CV.getContext('2d')
-	Main.CV.width='1000'
-	Main.CV.height='1000'
-
-	Main.NumberTable=document.body.AddElement({Class:'NumberTable',Value:{}})
 	Main.NumberTable.AddFile=function(FileName,Info){
-		var NumberValue=this.AddElement({Class:'NumberValue',Value:FileName})
-		var o=[]
+		var NumberValue=this.AddElement({Name:'NumberValue',Value:FileName})
 		for(var i of Info)if(i){
 			if(!Main.Color[i.ID])Main.Color[i.ID]=[]
 			Main.Color[i.ID].push(i)
-			var ColorValue=NumberValue.AddElement({Class:'ColorValue',Value:i.ID})
+			const ColorValue=NumberValue.AddElement({Name:'ColorValue',Value:i.ID})
 			ColorValue.ColorLine=i
+			ColorValue.onclick=function(E){
+				const Line=this.ColorLine
+				const Points=[]
+				for(let o of Line)if(o.deltaE)Points.push({X:parseFloat(o.ID),Y:parseFloat(o.deltaE)})
+				Main.CV.Show().DrawCurve(Points,`lab(${Line[20].LAB.map(o=>o|0).join(' ')})`)
+			}
 			for(var v of i)if(v.Point){
-				var p=ColorValue.AddElement({Class:'Point',Value:v.deltaE.toFixed(2)})
+				const p=ColorValue.AddElement({Name:'Point',Value:v.deltaE.toFixed(2)})
 				p.Info=v
 				v.Element=p
 				v.Line=i
-				// if(i.ID=='K')p.style.color='#0F0'
 				p.AddClass(i.ID)
-				// p.style.backgroundColor=`rgb(${v.RGB[0]},${v.RGB[1]},${v.RGB[2]})`
-				p.style.backgroundColor=`lab(${v.LAB[0]}% ${v.LAB[1]} ${v.LAB[2]})`
+				p.style.backgroundColor=`lab(${v.LAB.map(o=>o|0).join(' ')})`
 				p.AddElement({Class:'Level',Value:v.ID})
+				p.AddElement({Name:'dE',Value:'$dE'})
 			}
 		}
 	}
-	
 	document.body.onmousemove=function(E) {
 		if(E.target.Info){
 			var Info=E.target.Info
@@ -117,52 +151,48 @@ canvas{
 				var T=SC[0]
 				for(var o of SC){
 					o.Element.DelClass('Select')
+					o.Element.dE.value=deltaE(o.LAB,Info.LAB).toFixed(2)
 					if(deltaE(T.LAB,Info.LAB)>deltaE(o.LAB,Info.LAB))T=o
 				}
 				T.Element.AddClass('Select')
-				console.dir(T)
 			}
 		}
 		else ShowInfo()
 	}
-	document.body.onclick=function(E){
-		console.dir(E)
-		var EX=E.target
-		while(EX)if(EX.ColorLine){
-			var Line=EX.ColorLine
-			var Points=[]
-			for(var o of Line)if(o.Point)Points.push({X:parseFloat(o.ID),Y:parseFloat(o.Point)})
-			DrawCurve(Main.CT,Points)
-			return
-		}else EX=EX.parentElement
-	}
-
 }
-function DrawCurve(CT,Points){
-	
+function ThisDrawCurve(Points,Color){
+	const CT=this.Context
+	const W=this.width
+	const s=W/100
+	const w=W/20
+	for(let i=0;i<=W;i+=w){
+		CT.strokeStyle='#000'
+		CT.lineWidth=.5
+		CT.moveTo(i+.5,0)
+		CT.lineTo(i+.5,this.height)
+		CT.stroke()
+	}
 	CT.beginPath()
+	CT.lineWidth=2
+	CT.strokeStyle=Color
 	for(var i in Points){
 		var a=Points[i]
 		var b=Points[++i]
-		if(!b){CT.quadraticCurveTo(a.X*10, 1000-a.Y*10,a.X*10,1000-a.Y*10);continue;}
-		var c={X:(a.X+b.X)/2,Y:(a.Y+b.Y)/2,}
-		CT.quadraticCurveTo(a.X*10, 1000-a.Y*10,c.X*10,1000-c.Y*10)
+		if(!b){CT.quadraticCurveTo(a.X*s,W-a.Y*s,a.X*s,W-a.Y*s);continue;}
+		var c={X:(a.X+b.X)/2,Y:(a.Y+b.Y)/2}
+		CT.quadraticCurveTo(a.X*s,W-a.Y*s,c.X*s,W-c.Y*s)
 	}
-	CT.moveTo(1000,0)
-	// CT.closePath()
+	CT.moveTo(W,0)
+	CT.closePath()
 	CT.stroke()
 	
-	for(var a of Points){
-		
-		// var a=Points[i]
-		// console.dir(a)
-
-		CT.beginPath()
-		CT.arc(a.X*10, 1000-a.Y*10, 3, 0, Math.PI*2)
-		CT.fillStyle = 'red'
-		CT.closePath()
-		CT.fill()
-	}
+	// for(var a of Points){
+	// 	CT.beginPath()
+	// 	CT.arc(a.X*s,W-a.Y*s,3,0,Math.PI*2)
+	// 	CT.fillStyle='red'
+	// 	CT.closePath()
+	// 	CT.fill()
+	// }
 }
 function ShowInfo(Info,X,Y){
 	if(Main.InfoPage==null){
@@ -220,9 +250,7 @@ function LoadFile(){
 	
 	var PS=[]
 	for(var f of this.Files)if(!f.Info)return;else PS.push(f.Info)
-	Promise.all(PS).then(OS=>{
-		for(var o of OS)Main.NumberTable.AddFile(o.FileName,o)
-	})
+	Promise.all(PS).then(OS=>{for(var o of OS)Main.NumberTable.AddFile(o.FileName,o)})
 }
 function AddFile(FileName,Info){
 	console.dir(Info)
