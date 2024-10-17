@@ -13,6 +13,10 @@ midclt call system.advanced.update '{"kernel_extra_options": "libata.force=3.0Gb
 /proc/cmdline
 
 
+内存相关
+echo 0 > /sys/module/zfs/parameters/zfs_arc_shrinker_limit		zfs arc限制?
+echo 3 > /proc/sys/vm/drop_caches								删除缓存
+
 清理回收站
 
 find /mnt/**/.recycle -mtime +900 -type f -print0 |xargs -0 rm 

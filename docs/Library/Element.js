@@ -114,7 +114,7 @@ Element.prototype.SetClass	=function(Class,TRUE){
 	var cn=this.className
 	if(!TRUE)cn=cn.replace(Class,'')
 	else if(cn.indexOf(Class)==-1)cn+=' '+Class;
-	this.className=cn.replace(/ +/,' ')
+	this.className=cn.replace(/ +/g,' ')
 	return this
 }
 Element.prototype.Clear		=function(){while(this.firstChild)this.removeChild(this.firstChild);return this}

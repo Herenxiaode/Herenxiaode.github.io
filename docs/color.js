@@ -31,19 +31,13 @@ body{
 .NumberTable{display:block;}
 .NumberValue{display: inline-grid;}
 .ColorValue{display:inline-grid;}
-.Point{position: relative;padding:.7em 1em;}
-.Point .Level{
-	position: absolute;
-    font-size: .1em;
-    left: 0px;
-    top: 0px;
+.Point{position: relative;padding:0 1em 0 1.7em;}
+.Point>*{
+	position:absolute;
+    font-size:9px;
 }
-.Point .dE{
-	position: absolute;
-    font-size: .1em;
-    left: 0px;
-    bottom: 0px;
-}
+.Point .Level{right:0px;top:0px;}
+.Point .dE{left:0px;bottom:0px;}
 
 .InfoPage{
 	display: block;
@@ -60,8 +54,8 @@ body{
 .Point{}
 .K{color:#0F0;}
 .Point.Select{color:#F00;}
-.M.Select{color:#0F0;}
-.O.Select{color:#00F;}
+.M.Select{color:#0F8;}
+.O.Select{color:#08F;}
 
 Menu{
 	position:fixed;
@@ -164,17 +158,19 @@ function ThisDrawCurve(Points,Color){
 	const CT=this.Context
 	const W=this.width
 	const s=W/100
-	const w=W/20
+	// const w=W/20
 	CT.beginPath()
-	for(let i=0;i<=W;i+=w){
+	for(let i=0;i<=W;i+=W/10){
 		CT.strokeStyle='#000'
 		CT.lineWidth=.5
 		CT.moveTo(i+.5,0)
 		CT.lineTo(i+.5,this.height)
+		CT.moveTo(0,i+.5)
+		CT.lineTo(this.width,i+.5)
 		CT.stroke()
 	}
 	CT.beginPath()
-	CT.lineWidth=2
+	CT.lineWidth=3
 	CT.strokeStyle=Color
 	for(let i in Points){
 		const a=Points[i]
@@ -186,13 +182,14 @@ function ThisDrawCurve(Points,Color){
 	CT.moveTo(W,0)
 	CT.stroke()
 	
-	// for(var a of Points){
-	// 	CT.beginPath()
-	// 	CT.arc(a.X*s,W-a.Y*s,3,0,Math.PI*2)
-	// 	CT.fillStyle='red'
-	// 	CT.closePath()
-	// 	CT.fill()
-	// }
+	for(var a of Points){
+		CT.beginPath()
+		CT.arc(a.X*s,W-a.Y*s,2,0,Math.PI*2)
+		CT.fillStyle=`red`
+		// CT.fillStyle=`lab(${Line[20].LAB.map(o=>o|0).join(' ')})`
+		CT.closePath()
+		CT.fill()
+	}
 	// CT.closePath()
 }
 function ShowInfo(Info,X,Y){
@@ -222,10 +219,11 @@ function ShowInfo(Info,X,Y){
 }
 function LoadFile(){
 	console.dir(this.FileName)
-	let Length=parseInt(this.result.match(/LGOROWLENGTH\s"(\d+)"/)[1])
+	let ColorID=[...this.result.matchAll(/PROCESSCOLOR_ID\s"(\d \d) (\w),(\d)"/g)]
+	// let Length=parseInt(this.result.match(/LGOROWLENGTH\s"(\d+)"/)[1])
+	const Length=parseInt(this.result.match(/NUMBER_OF_SETS\s(\d+)/)[1])/ColorID.length
 	let Color=[]
 	Color.ID=this.FileName.match(/(.+)\.txt/)[1]
-	let ColorID=[...this.result.matchAll(/PROCESSCOLOR_ID\s"(\d \d) (\w),(\d)"/g)]
 	for(let o of ColorID){
 		Color[o[3]]=[]
 		Color[o[3]].ID=o[2]
