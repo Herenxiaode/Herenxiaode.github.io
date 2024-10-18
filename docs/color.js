@@ -74,6 +74,7 @@ canvas{
     z-index: -1;
     
 }
+copyright{position:fixed;bottom:0;font-size:9px;}
 .red{color:#F00 !important;}
 .Hidden{display:none;}
 `)
@@ -81,10 +82,10 @@ canvas{
 	const Menu=Body.AddElement({ID:'Menu',Value:[
 		{ID:'Canvas'},
 		{ID:'Input'},
-		// {ID:'Switch',Value:'$State'},
 		{ID:'Show',Value:'显示画布'},
 		{ID:'Hide',Value:'隐藏画布'},
-		{ID:'Clear',Value:'清除画布'}
+		{ID:'Clear',Value:'清除画布'},
+		{ID:'Copyright',Value:`©L 2024-20241018.14:29`}
 	]})
 	const Input=Menu.Input
 	const Canvas=Main.CV=Menu.Canvas.Hide()
@@ -223,25 +224,26 @@ function ShowInfo(Info,X,Y){
 }
 function LoadFile(){
 	console.dir(this.FileName)
-	let ColorID=[...this.result.matchAll(/PROCESSCOLOR_ID\s"(\d \d) (\w),(\d)"/g)]
+	const ColorID=[...this.result.matchAll(/PROCESSCOLOR_ID\s"(\d \d) (\w),(\d)"/g)]
 	// let Length=parseInt(this.result.match(/LGOROWLENGTH\s"(\d+)"/)[1])
 	const Length=parseInt(this.result.match(/NUMBER_OF_SETS\s(\d+)/)[1])/ColorID.length
-	let Color=[]
+	const Color=[]
 	Color.ID=this.FileName.match(/(.+)\.txt/)[1]
 	for(let o of ColorID){
 		Color[o[3]]=[]
 		Color[o[3]].ID=o[2]
 	}
 
-	let ID=this.result.match(/ SAMPLE_ID.+/)[0].match(/\S+/g)
-	let List=[]
-	for(var I of this.result.match(/ \d+\t(.+)/g)){
-		let Line={}
-		var I=I.match(/\S+/g)
-		for(var i=0;i<ID.length;i++)Line[ID[i]]=parseFloat(I[i])
-		let index=parseInt((Line.SAMPLE_ID-1)/Length)+1
+	const ID=this.result.match(/ SAMPLE_ID.+/)[0].match(/\S+/g)
+	const List=[]
+	for(let I of this.result.match(/ \d+\t(.+)/g)){
+		const Line={}
+		I=I.match(/\S+/g)
+		for(let i=0;i<ID.length;i++)Line[ID[i]]=parseFloat(I[i])
+		const index=parseInt((Line.SAMPLE_ID-1)/Length)+1
 		let CID=index
-		for(var i in Line)if(i.endsWith(index))CID=i
+		for(let i in Line)if(i.endsWith(index))CID=i
+		if(!Color[index])Color[index]=[]
 		Color[index].push({
 			ID:Line[CID],
 			LAB:[Line.LAB_L,Line.LAB_A,Line.LAB_B]
@@ -251,9 +253,9 @@ function LoadFile(){
 	this.Info=AddFile(this.FileName,Color)
 	this.File.Info=this.Info
 	
-	var PS=[]
-	for(var f of this.Files)if(!f.Info)return;else PS.push(f.Info)
-	Promise.all(PS).then(OS=>{for(var o of OS)Main.NumberTable.AddFile(o.FileName,o)})
+	const PS=[]
+	for(let f of this.Files)if(!f.Info)return;else PS.push(f.Info)
+	Promise.all(PS).then(OS=>{for(let o of OS)Main.NumberTable.AddFile(o.FileName,o)})
 }
 function AddFile(FileName,Info){
 	console.dir(Info)
