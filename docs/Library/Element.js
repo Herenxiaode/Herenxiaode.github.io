@@ -65,6 +65,28 @@ Element.prototype.AddInput	=function(Value,Class){
 	this.appendChild(x);
 	return x;
 }
+Element.prototype.AddLableInput	=function({ID,Class,Value},inputOPT){
+	const label=document.createElement('label')
+	const input=document.createElement('input')
+	label.Input=input
+	for(const k of Object.keys(inputOPT))input[k]=inputOPT[k]
+	if(ID)this[label.id=ID]=label
+	if(Class)label.className=Class
+	if(Value){
+		label.appendChild(document.createTextNode(Value||''))
+		label.define('value',{
+			get:function(){return this.firstChild.data},
+			set:function(o){return this.firstChild.data=o}
+		})
+	}
+	else label.define('value',{
+		get:function(){return this.Input.value},
+		set:function(o){if(o)this.Input.value=o;return this}
+	})
+	label.appendChild(input)
+	this.appendChild(label)
+	return label;
+}
 Element.prototype.AddImage	=function(Value,Class){
 	const x=document.createElement('img')
 	if(Class)x.className=Class
