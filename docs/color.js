@@ -127,6 +127,7 @@ Menu input[type="file"]{display:none;}
 	// const Input=Menu.sFile.sFile
 	const Canvas=Main.CV=Menu.Canvas.Hide()
 	Canvas.width=Canvas.height='500'
+	Canvas.Init=CanvasInit
 	Canvas.DrawCurve=ThisDrawCurve
 	if(Canvas.getContext)Canvas.Context=Main.CT=Canvas.getContext('2d')
 	// Menu.SetVariable({State:'显示画布'})
@@ -137,7 +138,9 @@ Menu input[type="file"]{display:none;}
 	Canvas.Hide=()=>Canvas.SetClass('Hidden',1)
 	Menu.Show.onclick=()=>Canvas.Show()
 	Menu.Hide.onclick=()=>Canvas.Hide()
-	Menu.Clear.onclick=()=>{Menu.Canvas.Context.closePath();Menu.Canvas.Context.clearRect(0,0,Menu.Canvas.width,Menu.Canvas.height)}
+	Menu.Clear.onclick=()=>{Menu.Canvas.Context.closePath();Menu.Canvas.Context.clearRect(0,0,Menu.Canvas.width,Menu.Canvas.height);Canvas.Init()}
+	Canvas.Init()
+	
 	for(const k of Object.keys(Labs)){
 		const e=Menu.Labs.AddElement({Value:k})
 		const [L,A,B]=Labs[k]
@@ -217,21 +220,25 @@ Menu input[type="file"]{display:none;}
 		else ShowInfo()
 	}
 }
-function ThisDrawCurve(Points,Color){
+function CanvasInit(){
 	const CT=this.Context
 	const W=this.width
 	const s=W/100
-	// const w=W/20
 	CT.beginPath()
 	for(let i=0;i<=W;i+=W/10){
 		CT.strokeStyle='#000'
 		CT.lineWidth=.5
-		CT.moveTo(i+.5,0)
-		CT.lineTo(i+.5,this.height)
+		CT.moveTo(i-.5,0)
+		CT.lineTo(i-.5,this.height)
 		CT.moveTo(0,i+.5)
 		CT.lineTo(this.width,i+.5)
 		CT.stroke()
 	}
+}
+function ThisDrawCurve(Points,Color){
+	const CT=this.Context
+	const W=this.width
+	const s=W/100
 	CT.beginPath()
 	CT.lineWidth=3
 	CT.strokeStyle=Color
