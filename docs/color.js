@@ -1,4 +1,5 @@
-var Main=this;
+const Main=this
+document.title='简易色差分析工具'
 function AddScript(document,Path,NoHide){
 	var o=document.createElement('script');
 	if(!NoHide)o.id='HideScript';o.src=Path;
@@ -8,18 +9,61 @@ function AddScript(document,Path,NoHide){
 AddScript(document,'/Library/prototype.js?v1')
 AddScript(document,'/Library/Element.js?v1')
 AddScript(document,'/Library/color.js?v1')
-
+const Labs={
+	W:[100,0,0],
+	C:[50,-64,-64],
+	M:[50,65,0],
+	Y:[100,0,128],
+	K:[0,0,0],
+	O:[50,64,64],
+	B:[50,0,-64],
+	R:[50,128,128],
+	g:[50,0,0],
+}
 this.onload=()=>{
 	Main.Color=[]
 	var Body=document.body;
 	Body.AddCSS('InkCSS',`
-body{
+html{
 	width:100vw;height:100vh;
-	background-color:unset;
 	white-space:pre;
 	text-align:center;
 	cursor:default;
 }
+body{
+	width:100%;height:100%;
+	background-color:unset;
+}
+Menu{
+	position:fixed;
+	top:0;left:0;
+	width:128px;
+	margin:0;padding:0;
+}
+Menu>*{float:left;}
+Menu input{width:5em;}
+Menu .Button{
+    background:#2222;
+	margin: 4px;
+    padding: 8px 2px;
+    border:#CCC 1px solid;
+}
+Menu canvas{
+	position:fixed;
+	display: block;
+	width:min(40vh,40vw);
+    background:#FFF;
+    bottom:9px;
+}
+Menu labs{}
+Menu labs>*{display:block;width:32px;height:32px;line-height:32px;}
+Menu copyright{position:fixed;bottom:0;font-size:9px;}
+Menu input:hover,Menu .Button:hover{
+    border-radius: .5em;
+	background-color: #8888;
+}
+Menu input[type="file"]{display:none;}
+
 .LabelH{font-size:.8em;}
 .INK x{display:inline-block;width:1em;}
 .INK .LabelT{width:unset;}
@@ -29,10 +73,20 @@ body{
 	height:8em;
 	display:block;
 }
-.NumberTable{display:block;}
+.NumberTable{display:block;height:100%;overflow-y:auto;}
 .NumberValue{display: inline-grid;}
 .ColorValue{display:inline-grid;}
-.Point{position: relative;padding:0 1em 0 1.7em;}
+.Point{
+	position: relative;
+	color:black;
+	background-color:lab(var(--L)var(--A)var(--B));
+	padding:4px 1em 4px 1.7em;
+}
+.Point.Select{
+	color: red;
+    border-block: red 4px solid;
+	padding-block:0;
+}
 .Point>*{
 	position:absolute;
     font-size:9px;
@@ -52,42 +106,25 @@ body{
 .InfoPage .RGBPoint{display: block;}
 .InfoPage .deltaE{display: block;}
 
-.Point{}
 .K{color:#0F0;}
-.Point.Select{color:#F00;}
 .M.Select{color:#0F8;}
 .O.Select{color:#08F;}
 
-Menu{
-	position:fixed;
-	top:0;left:0;
-	margin:0;padding:0;
-}
-Menu>*{display:block;}
-input{width:5em;}
-canvas{
-	position: absolute;
-	left: 0;
-	width: 500px;
-	height: 500px;
-    background: #FFF;
-    z-index: -1;
-    
-}
-copyright{position:fixed;bottom:0;font-size:9px;}
 .red{color:#F00 !important;}
 .Hidden{display:none;}
 `)
 	const NumberTable=Main.NumberTable=Body.AddElement({Name:'NumberTable'})
 	const Menu=Body.AddElement({ID:'Menu',Value:[
+		{ID:'Labs'},
 		{ID:'Canvas'},
-		{ID:'Input'},
-		{ID:'Show',Value:'显示画布'},
-		{ID:'Hide',Value:'隐藏画布'},
-		{ID:'Clear',Value:'清除画布'},
-		{ID:'Copyright',Value:`©L 2024-20241018.14:29`}
+		Body.AddLableInput({ID:'sFile',Class:'Button',Value:'选择文件'},{type:'file',multiple:true,onchange:function(){AddFiles(this.files)}}),
+		// {ID:'sFile',Type:'label',Value:{ID:'sFile',Type:'Input'}},
+		{ID:'Show',Class:'Button',Value:'显示画布'},
+		{ID:'Hide',Class:'Button',Value:'隐藏画布'},
+		{ID:'Clear',Class:'Button',Value:'清除画布'},
+		{ID:'Copyright',Value:`  ©L 2024-20241018.20:07`}
 	]})
-	const Input=Menu.Input
+	// const Input=Menu.sFile.sFile
 	const Canvas=Main.CV=Menu.Canvas.Hide()
 	Canvas.width=Canvas.height='500'
 	Canvas.DrawCurve=ThisDrawCurve
@@ -101,7 +138,12 @@ copyright{position:fixed;bottom:0;font-size:9px;}
 	Menu.Show.onclick=()=>Canvas.Show()
 	Menu.Hide.onclick=()=>Canvas.Hide()
 	Menu.Clear.onclick=()=>{Menu.Canvas.Context.closePath();Menu.Canvas.Context.clearRect(0,0,Menu.Canvas.width,Menu.Canvas.height)}
-
+	for(const k of Object.keys(Labs)){
+		const e=Menu.Labs.AddElement({Value:k})
+		const [L,A,B]=Labs[k]
+		e.style.color=`lab(${L>50?0:100} ${A==0?0:A>0?-128:128} ${B==0?0:B>0?-128:128})`
+		e.style.backgroundColor=`lab(${Labs[k].join(' ')})`
+	}
 	function AddFiles(Files){for(const file of Files)if(file.name.endsWith('.txt')){
 		const FR=new FileReader()
 		FR.Files=Files
@@ -110,9 +152,9 @@ copyright{position:fixed;bottom:0;font-size:9px;}
 		FR.onload=LoadFile
 		FR.readAsText(file)
 	}}
-	Input.type='file'
-	Input.multiple=true
-	Input.onchange=function(){AddFiles(this.files)}
+	// Input.type='file'
+	// Input.multiple=true
+	// Input.onchange=function(){AddFiles(this.files)}
 	document.body.ondrop=function(E){AddFiles(E.dataTransfer.files);E.preventDefault()}
 	document.body.ondragover=E=>E.preventDefault()
 
@@ -120,10 +162,21 @@ copyright{position:fixed;bottom:0;font-size:9px;}
 		const NumberValue=this.AddElement({Name:'NumberValue',Value:FileName})
 		NumberValue.oncontextmenu=function(E){E.preventDefault();this.remove()}
 		for(let i of Info)if(i){
+			const [L,A,B]=i[i.length-1].LAB
+			i.dE=100
+			for(const k of Object.keys(Labs)){
+				if((k=='W'||k=='K'||k=='g')&&(Math.abs(A)>10||Math.abs(B)>10))continue
+				const dE=deltaE([L,A,B],Labs[k])
+				if(dE<i.dE){i.ID=k;i.dE=dE}
+			}
 			if(!Main.Color[i.ID])Main.Color[i.ID]=[]
 			Main.Color[i.ID].push(i)
 			const ColorValue=NumberValue.AddElement({Name:'ColorValue',Value:i.ID})
 			ColorValue.ColorLine=i
+			if(L<50&&Math.abs(B)<50&&Math.abs(B)<50)ColorValue.AddClass('K')
+			ColorValue.style.setProperty('--sL',L>50?0:100)
+			ColorValue.style.setProperty('--sA',L>0?-100:100)
+			ColorValue.style.setProperty('--sB',B>0?-100:100)
 			ColorValue.onclick=function(E){
 				const Line=this.ColorLine
 				const Points=[]
@@ -136,7 +189,12 @@ copyright{position:fixed;bottom:0;font-size:9px;}
 				v.Element=p
 				v.Line=i
 				p.AddClass(i.ID)
-				p.style.backgroundColor=`lab(${v.LAB.map(o=>o|0).join(' ')})`
+				p.style.setProperty('--L',v.LAB[0]|0)
+				p.style.setProperty('--A',v.LAB[1]|0)
+				p.style.setProperty('--B',v.LAB[2]|0)
+				// p.style.setProperty('--cL',v.LAB[0]>50?0:100)
+				// p.style.backgroundColor=`lab(${v.LAB.map(o=>o|0).join(' ')})`
+				// p.style.backgroundColor=`lab(${v.LAB.map(o=>o|0).join(' ')})`
 				p.AddElement({Class:'Level',Value:v.ID})
 				p.AddElement({Name:'dE',Value:'$dE'})
 			}
