@@ -14,6 +14,7 @@ this.onload=()=>{
 	var Body=document.body;
 	Body.AddCSS('InkCSS',`
 body{
+	width:100vw;height:100vh;
 	background-color:unset;
 	white-space:pre;
 	text-align:center;
@@ -100,21 +101,24 @@ canvas{
 	Menu.Hide.onclick=()=>Canvas.Hide()
 	Menu.Clear.onclick=()=>{Menu.Canvas.Context.closePath();Menu.Canvas.Context.clearRect(0,0,Menu.Canvas.width,Menu.Canvas.height)}
 
+	function AddFiles(Files){for(const file of Files)if(file.name.endsWith('.txt')){
+		const FR=new FileReader()
+		FR.Files=Files
+		FR.File=file
+		FR.FileName=file.name
+		FR.onload=LoadFile
+		FR.readAsText(file)
+	}}
 	Input.type='file'
 	Input.multiple=true
-	Input.onchange=function(){
-		for(let file of this.files)if(file.name.endsWith('.txt')){
-			let FR=new FileReader()
-			FR.Files=this.files
-			FR.File=file
-			FR.FileName=file.name
-			FR.onload=LoadFile
-			FR.readAsText(file)
-		}
-	}
+	Input.onchange=function(){AddFiles(this.files)}
+	document.body.ondrop=function(E){AddFiles(E.dataTransfer.files);E.preventDefault()}
+	document.body.ondragover=E=>E.preventDefault()
+
 	Main.NumberTable.AddFile=function(FileName,Info){
-		var NumberValue=this.AddElement({Name:'NumberValue',Value:FileName})
-		for(var i of Info)if(i){
+		const NumberValue=this.AddElement({Name:'NumberValue',Value:FileName})
+		NumberValue.oncontextmenu=function(E){E.preventDefault();this.remove()}
+		for(let i of Info)if(i){
 			if(!Main.Color[i.ID])Main.Color[i.ID]=[]
 			Main.Color[i.ID].push(i)
 			const ColorValue=NumberValue.AddElement({Name:'ColorValue',Value:i.ID})
@@ -125,7 +129,7 @@ canvas{
 				for(let o of Line)if(o.deltaE)Points.push({X:parseFloat(o.ID),Y:parseFloat(o.deltaE)})
 				Main.CV.Show().DrawCurve(Points,`lab(${Line[20].LAB.map(o=>o|0).join(' ')})`)
 			}
-			for(var v of i)if(v.Point){
+			for(let v of i)if(v.Point){
 				const p=ColorValue.AddElement({Name:'Point',Value:v.deltaE.toFixed(2)})
 				p.Info=v
 				v.Element=p
