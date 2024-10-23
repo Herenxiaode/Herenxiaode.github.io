@@ -1,0 +1,16 @@
+
+
+wmic diskdrive list brief		//查看磁盘列表
+
+.\grub-install.exe --boot-directory=F:\ --target=i386-pc \\.\PHYSICALDRIVE2						//传统BIOS引导
+.\grub-install.exe --boot-directory=F:\ --efi-directory=f: --removable --target=i386-efi		//32位UEFI引导
+.\grub-install.exe --boot-directory=F:\ --efi-directory=f: --removable --target=x86_64-efi		//64位UEFI引导
+
+以下未完成,测试不理想且麻烦,改用ventoy
+menuentry 'Starting in Windows10_BE22H2.iso'{
+	set root='(hd0,msdos1)'
+	echo 'Loading Memdisk...'
+	linux16 /boot/memdisk iso raw
+	echo 'Loading ISO...'
+	initrd16 /boot/Windows10_BE22H2.iso
+}
