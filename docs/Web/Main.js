@@ -9,14 +9,12 @@ function AddScript(document,Path,NoHide){
 AddScript(document,'./Library/prototype.js?	v7')
 AddScript(document,'./Library/Element.js?	v1022')
 
-
 this.onload=_=>{
-	
-	let Body=document.body.AddElement({Value:[
+	const Element=document.body.AddElement({Value:[
 		{Name:'Index',Class:'Index',Value:[
 			{Class:'Header',Value:'目录'},
-			{Class:'',Value:'泰拉瑞亚'},
-			// {Class:'h2',Value:'泰拉瑞亚'},
+			{Name:'Terraria',Value:'泰拉瑞亚'},
+			{Name:'Note',Value:'笔记'},
 		]},
 		{Name:'Page',Type:'iframe',Class:'Page'},
 		{Class:'footer',Value:'©2015-2022 L-0'}
@@ -52,7 +50,7 @@ body{
 .Header{border-bottom:#222 solid 1px;}
 .footer{position:absolute;left:50%;bottom:0px;transform:translate(-50%,0);font-size:8px;}
 `})
-	Body.Page.src='Web/main.html'
+	Element.Page.src='Web/main.html'
 	document.title='此世间如此无趣...'
-	// let footer=document.body.CreateElementX({Class:'footer',Value:'©2015-2022 L-0'})
+	
 }

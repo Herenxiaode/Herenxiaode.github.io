@@ -25,3 +25,11 @@ icacls "C:\Users\*" /grant everyone:(OI)(CI)F		#CMD开放权限
 docker run --detach -v "TrueNAS:/data" -p 88:80 -p 99:443 ixsystems/truecommand					#docker truecommand
 
 netsh advfirewall firewall add rule name=Node dir=in action=allow localport=88 protocol=tcp		#CMD开启TCP-88端口
+
+wsl --list --verbose					#列出已安装的wsl
+wsl --set-default docker-desktop		#切换wsl
+wsl -u root								#指定用户登录
+
+Get-NetAdapter							#列出网卡
+Get-VMSwitch							#列出Hyper-V虚拟交换机
+Set-VMSwitch WSL -NetAdapterName 1G		#Hyper-V直连网卡

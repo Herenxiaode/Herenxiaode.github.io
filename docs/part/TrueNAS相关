@@ -1,14 +1,31 @@
 
 坏块信息查看与清理
-
+zpool list	查看池列表
 zpool status 查询坏块
 zpool clear 池ID 硬盘ID 清理坏块信息
 zpool scrub 池ID 自动纠错
 
 
-设定SATA速度
+强制释放内存
+echo 0 > /proc/sys/vm/drop_caches
 
-midclt call system.advanced.update '{"kernel_extra_options": "libata.force=3.0Gbps"}'
+
+测试硬盘速度
+dd if=/dev/zero of=test bs=8k count=8k			测试写速度
+dd if=test of=/dev/null bs=8k count=8k			测速读速度
+
+
+电脑禁用接收方缩放(10G网第一次拉图只有百兆多点)
+控制面板->网络连接->右键属性->配置->高级->接收方调整->禁用
+
+smb额外参数
+cli
+service smb update smb_options="recycle:subdir_mode=0777\naio write size = 0"
+service smb update smb_options="unix extensions = no\nallow insecure wide links = yes\nrecycle:subdir_mode=0777\naio read size = 0"
+//allocation roundup size = 1073741824
+
+设定SATA速度
+midclt call system.advanced.update '{"kernel_extra_options": "libata.force=6.0Gbps"}'
 1.5Gbps	3.0Gbps	6.0Gbps
 /proc/cmdline
 

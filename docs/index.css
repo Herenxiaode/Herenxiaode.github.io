@@ -1,0 +1,32 @@
+@import '/main.css';
+body{
+	background: url(RES/BJ2.jpg);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-color: #000;
+	width: 90%;height:92%;
+	margin: 2% auto;
+	box-shadow:0 0 16px #333,0 0 16px #000;
+	border-radius: 10px 10px 10px 10px;
+	opacity: 0.8;
+}
+iframe{
+	float: left;
+	width:80%;height:100%;
+	float:left;
+	border-style:none;
+	border-radius:5px 0 0 5px;
+	background:#000;
+}
+Index{
+	display:grid;align-content:start;
+	width:calc(20% - 1px);height:100%;
+	overflow:overlay;
+	float:right;
+	border-radius: 0 5px 5px 0;
+	border-left:#222 solid 1px;
+	background:#000;
+}
+
+Header{border-bottom:#222 solid 1px;}
+Footer{position:absolute;left:50%;bottom:0;transform:translate(-50%,0);font-size:8px;}

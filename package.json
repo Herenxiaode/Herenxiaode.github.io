@@ -6,7 +6,7 @@
 	"main": "bin/server.ts",
 	"scripts": {
 		"test": "node webserver.js",
-		"web": "esbuild src/web/log/App.ts --bundle --minify --outfile=docs/bundle.js"
+		"web": "esbuild src/App.ts --bundle --minify --outfile=docs/bundle.js"
 	},
 	"type": "commonjs",
 	"devDependencies": {

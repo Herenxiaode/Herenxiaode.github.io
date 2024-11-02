@@ -1,23 +1,4 @@
 @import '/main.css';
-#body{
-	background: url(../RES/Forest_background_17.png);
-	background-size: cover;
-	background-repeat:repeat-x;
-	animation: animatedBackground 40s linear infinite;
-}
-#index{
-	width:calc(20% - 1px);
-	float: right;
-	border-radius: 0 10px 10px 0;
-	border-left:solid 1px #222;
-}
-iframe{
-	width: 646px;
-    height: 190px;
-    margin: auto;
-    display: block;
-    border: 0;
-}
 .Form{
 	width:80%;height:100%;
 	float:left;
