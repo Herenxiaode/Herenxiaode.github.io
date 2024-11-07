@@ -1,0 +1,4 @@
+重新排序
+SET @i=0;
+UPDATE `PrintLogs` SET ID=(@i:=@i+1)
+order BY `TimeStart` asc;
