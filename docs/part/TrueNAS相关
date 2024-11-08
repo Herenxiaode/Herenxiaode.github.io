@@ -25,7 +25,7 @@ service smb update smb_options="unix extensions = no\nallow insecure wide links 
 //allocation roundup size = 1073741824
 
 设定SATA速度
-midclt call system.advanced.update '{"kernel_extra_options": "libata.force=6.0Gbps"}'
+midclt call system.advanced.update '{"kernel_extra_options": "libata.force=3.0Gbps"}'
 1.5Gbps	3.0Gbps	6.0Gbps
 /proc/cmdline
 
