@@ -8,8 +8,6 @@ vmSwitch=WSL
 ipv6=true
 dhcp=true
 
-
-
 Start-Service -Name WinRM
 
 C:\ProgramData\ssh\sshd_config
@@ -39,3 +37,8 @@ Set-VMSwitch WSL -NetAdapterName 1G		#Hyper-V直连网卡
 mklink /j <new> <old>					#文件链接 
 
 find ./a -depth -name "*TC*" -type f -print0|xargs --null -i cp "{}" ./b	#查找目标文件并拷贝
+
+npm install pm2 pm2-windows-startup -g
+pm2-startup install
+pm2 start xxx
+pm2 save
