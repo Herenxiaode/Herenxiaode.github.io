@@ -1,0 +1,11 @@
+无线调试
+adb --version
+adb pair ip:port [code]
+adb connect ip:port
+adb devices -l
+
+虚拟机启动不能
+hw.gpu.mode=angle
+虚拟机中文
+persist.sys.language=zh
+persist.sys.country=CN
