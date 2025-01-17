@@ -1,0 +1,2 @@
+生成密钥
+keytool -genkey -keyalg RSA -alias <Name>
